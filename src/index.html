@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style></style>
+  </head>
+  <body>
+    <script>
+      //redefine the method
+      Math.pow_ = Math.pow;
+      Math.pow = function (_base, _exponent) {
+        if (_base < 0) {
+          if (Math.abs(_exponent) < 1) {
+            //we're calculating nth root of _base, where n === 1/_exponent
+            if ((1 / _exponent) % 2 === 0) {
+              //nth root of a negative number is imaginary when n is even, we could return
+              //a string like "123i" but this would completely mess up further computation
+              return NaN;
+            } /*else if (1 / _exponent % 2 !== 0)*/
+            //nth root of a negative number when n is odd
+            return -Math.pow_(Math.abs(_base), _exponent);
+          }
+        } /*else if (_base >=0)*/
+        //run the original method, nothing will go wrong
+        return Math.pow_(_base, _exponent);
+      };
+
+      Math.sin_ = Math.sin;
+      Math.sin = function (x) {
+        if (x % Math.PI == 0) {
+          return 0;
+        } else {
+          return Math.sin_(x);
+        }
+      };
+
+      Math.cos_ = Math.cos;
+      Math.cos = function (x) {
+        if (x % (Math.PI / 2) == 0) {
+          return 0;
+        } else {
+          return Math.cos_(x);
+        }
+      };
+
+      Math.tan_ = Math.tan;
+      Math.tan = function (x) {
+        if (x % Math.PI == 0) {
+          return 0;
+        } else {
+          return Math.tan_(x);
+        }
+      };
+    </script>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mathquill\mathquill-0.10.1\mathquill.css" />
+    <script src="evaluatex\dist\evaluatex.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="mathquill\mathquill-0.10.1\mathquill.js"></script>
+    <script>
+      var MQ = MathQuill.getInterface(2);
+    </script>
+
+    <script src="Järjestelmäarvot.js"></script>
+
+    <p id="syöte"><span id="answer"></span></p>
+    <p id="error"></p>
+    <div id="ylä" class="flex-container">
+      <div id="tulosteet"></div>
+      <div id="palkki">
+        <div id="kirjat">
+          <div id="vakiokirja"><p class="otsikko bold">VAKIOKIRJA</p></div>
+
+          <div id="funktiokirja"><p class="otsikko bold">FUNKTIOKIRJA</p></div>
+          <div id="asetukset">
+            <p class="otsikko bold">ASETUKSET</p>
+            <div class="dropdown">
+              <button class="dropbtn">Väriteema</button>
+              <div class="dropdown-content">
+                <button id="tavallinen" onclick="ToggleTeema('tumma')">
+                  Tumma teema (idiooteille)
+                </button>
+                <button id="tavallinen" onclick="ToggleTeema('vaalea')">
+                  Vaalea teema
+                </button>
+              </div>
+            </div>
+            <button onclick="ToggleOhje()">Näytä ohje (idiooteille)</button>
+            <div class="dropdown">
+              <button class="dropbtn">Tuloksen muoto</button>
+              <div class="dropdown-content">
+                <button id="yleinen" onclick="ToggleMuoto(this)">
+                  ⚬ Yleinen
+                </button>
+                <button id="tieteellinen" onclick="ToggleMuoto(this)">
+                  Tieteellinen
+                </button>
+              </div>
+            </div>
+            <div class="dropdown">
+              <button class="dropbtn">Tarkkuus</button>
+              <div class="dropdown-content">
+                <button id="tavallinen" onclick="ToggleTarkkuus(this)">
+                  ⚬ Tavallinen
+                </button>
+                <button id="desimaali" onclick="ToggleTarkkuus(this)">
+                  1 desimaali
+                </button>
+                <button id="merkitsevä" onclick="ToggleTarkkuus(this)">
+                  1 merkitsevä luku
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="napit">
+          <input
+            id="nappi"
+            type="image"
+            src="VakiokirjaKuva.png"
+            alt="text"
+            onclick="ToggleBar('vakiokirja')"
+          />
+
+          <input
+            id="nappi"
+            type="image"
+            src="FunktiokirjaKuva.png"
+            alt="text"
+            onclick='ToggleBar("funktiokirja")'
+          />
+
+          <input
+            id="nappi"
+            type="image"
+            src="AsetuksetKuva.png"
+            alt="text"
+            onclick="ToggleBar('asetukset')"
+          />
+        </div>
+      </div>
+    </div>
+    <div id="ohje">
+      <button onclick="ToggleOhje()">Pois</button>
+
+      <p class="bold otsikko">PERUSTEET</p>
+      <p>
+        Ruudun alareunasta löytyy syöttökenttä, johon voi kirjoittaa useimpia
+        LaTex komentoja, kuten \frac, \sin, \sqrt. Laskua kirjoittaessa pitää
+        varoa ylimmääräisiä merkkejä, koska kääntäjä ei ymmärrä esimerkiksi
+        turhia operaattoreja tai välilyöntejä. Syöttökentän oikeaan laitaan
+        ilmestyy nykyisen laskun vastaus ja virhetilanteessa asianmukainen
+        virheilmoitus, kuten "Käännösvirhe", "NaN". Suorita laskutoimitus
+        painamalla Enter -näppäintä. Enter -näppäimellä voit myös siirtyä
+        syötteeseen.
+      </p>
+      <p>
+        Desimaaleja kirjoittaessa on käytettävä pistettä (.) tai pilkkua (,) ja
+        funktioiden muuttujien erottajana on käytettävä puolipistettä (;).
+      </p>
+      <p>
+        Virheettömän laskun tulos ilmestyy ruudun ylälaitaan, johon tallentuu
+        myös historia käyttökerran aikana lasketuista laskuista. Viimeiseen
+        tulokseen voi viitata kirjoittamalla syöttökenttään "ans" tai
+        tuplaklikkaamalla tulosta.
+      </p>
+      <p>
+        Ruudun vasemmasta laidasta löytyy näppäimet kaava- ja funktiokirjan
+        avaamiselle. Sieltä löytyy paikallisten vakioiden ja funktioiden lisäksi
+        käyttäjän itse lisäämät vakiot ja funktiot. Näitä voi lisätä omaan
+        laskuun helposti tuplaklikkaamalla mieluista kaavaa.
+      </p>
+
+      <p class="bold otsikko">PAIKALLISET VAKIOT, FUNKTIOT JA KOMENNOT</p>
+      <p>
+        Kääntäjä ymmärtää Javascriptin Math kirjaston mukaiset komennot, kuten
+        pow ja sin.Samoin myös vakiot, kuten PI ja E. Voit käyttää näitä
+        kirjoittamalla niiden nimen syöttökenttään. Paikallisissa vakioissa
+        tärkeää isolla kirjoittaminen. Funktioita käytetään samoin
+        kirjoittamalla funktion nimi, jota seuraa sulut, joiden sisällä ovat
+        muuttujat. Esimerkiksi pow(2;3). Huomaa välilyöntien käyttö.
+      </p>
+
+      <p>
+        Logaritmien käyttö onnistuu funktiolla logn(x;kanta), sillä petollisesti
+        täällä log tarkoittaa luonnollista logaritmia. Vaihtoehtoisesti voi myös
+        kirjoittaa kantaluvun log sanan alaindeksiin. Esimerkiksi log_2(10),
+        joka vastaa kaksikantaista logaritmia luvusta 10.
+      </p>
+
+      <p class="bold otsikko">KÄYTTÄJÄVAKIOT JA -FUNKTIOT</p>
+      <p>
+        Käyttäjä voi lisätä omia vakioita ja funktioita kirjoittamalla
+        syöttökenttään funktion nimen, jota seuraa muuttujat sulkujen sisällä.
+        Sitä seuraa itse funktio yhtäsuuruusmerkin erottamana. Esimerkiksi
+        f(x;y)=x*y+1. Funktio tallentuu funktiokirjaan, josta se on helppo
+        myöhemmin kopioida. Vakio lisätään samalla tavalla ensin nimeämällä
+        funktio ja yhtäsuurusmerkin jälkeen antamalla vakion arvo. Esimerkiksi
+        vakio=23. Vakion tai funktion nimi ei voi sisältää numeroita, mutta
+        yhden merkin pituiset alaindeksit ovat sallittuja. Vakioiden ja
+        funktioiden määrittelyssä voi käyttää ennen määriteltyjä vakioita ja
+        funktioita. Esimerkiksi g(x)=f(x)+vakio.
+      </p>
+
+      <p>
+        Vakion tai funktion käyttäminen onnistuu kirjoittamalla sen nimi
+        syöttökenttään tai kopioimalla se vakio- tai funktiokirjasta.
+      </p>
+
+      <p>
+        Jos tuotteessa ilmenee odottamaton ongelma, ota yhteyttä sähköpostitse
+        teeiteparempi@gmail.com
+      </p>
+    </div>
+
+    <script>
+      value = localStorage.getItem("teema");
+      ToggleTeema(value);
+
+      _vakiot = JSON.parse(localStorage.getItem("vakiot"));
+      _funktiot = JSON.parse(localStorage.getItem("funktiot"));
+
+      if (_vakiot == null) {
+        _vakiot = vakiot;
+      }
+      if (_funktiot == null) {
+        _funktiot = funktiot;
+      }
+
+      //Configure sidebar
+      const vakiokirja = document.getElementById("vakiokirja");
+      const funktiokirja = document.getElementById("funktiokirja");
+      const asetukset = document.getElementById("asetukset");
+      const bar = document.getElementById("palkki");
+
+      var vakiokirjaData = {};
+      var funktiokirjaData = funktioData;
+
+      var tarkkuus = 0;
+      var merkitsevät = false;
+      var tieteellinen = false;
+
+      document.onkeydown = function (e) {
+        if (e.key == "Enter") {
+          answerMathField.focus();
+        }
+      };
+
+      var lastans = "";
+      var lastPre = "";
+      const errorEl = document.getElementById("error");
+      //MQ.StaticMath(errorEl);
+      //errorEl.latex("1+1");
+
+      var answerSpan = document.getElementById("answer");
+      var answerMathField = MQ.MathField(answerSpan, {
+        spaceBehavesLikeTab: false,
+        restrictMismatchedBrackets: true,
+        supSubsRequireOperand: true,
+        autoCommands: "pi sqrt nthroot",
+        autoOperatorNames: "int",
+        handlers: {
+          edit: function () {
+            var latex = answerMathField.latex();
+            if (latex == "") {
+              errorEl.innerText = "";
+            }
+
+            if (latex.includes("=")) {
+              return null;
+            }
+
+            try {
+              latex = LastParse(latex);
+              latex = latex
+                .replaceAll("\\pi", "PI")
+                .replaceAll("ans", lastans)
+                .replaceAll(",", ".")
+                .replaceAll(";", ",");
+
+              var a = evaluatex(latex, _funktiot)(_vakiot);
+
+              if (!isNaN(a) && isFinite(a)) {
+                a = a.toString().replaceAll(".", ",");
+                if (a.indexOf("e+") >= 0) {
+                  var i = a.indexOf("e+");
+                  b = a.substring(i + 2);
+
+                  c = a.substring(0, i) + "\\cdot10^{" + b + "}";
+
+                  errorEl.innerText("= " + c);
+                  lastPre = c;
+                } else if (a.indexOf("e-") >= 0) {
+                  console.log(a.indexOf("e-"));
+                  var i = a.indexOf("e-");
+                  b = a.substring(i + 2);
+
+                  c = a.substring(0, i) + "\\cdot10^{-" + b + "}";
+                  errorEl.innerText = "= " + c;
+                  lastPre = c;
+                }
+                errorEl.innerText = "= " + a;
+                lastPre = a;
+              } else {
+                errorEl.innerText = "NaN";
+              }
+            } catch (err) {}
+          },
+          enter: function () {
+            var latex = answerMathField.latex();
+            var olatex = latex;
+
+            if (latex == "") {
+              return null;
+            }
+            // Create element:
+            const ans = document.createElement("p");
+            ans.setAttribute("class", "vastaus");
+            const eq = document.createElement("p");
+
+            if (latex.includes("=")) {
+              try {
+                LisääFunktioTaiMuuttuja(latex, olatex);
+                return null;
+              } catch (error) {
+                console.log(error);
+                return null;
+              }
+            }
+
+            latex = LastParse(latex);
+
+            latex = latex
+              .replaceAll("\\pi", "PI")
+              .replaceAll("ans", lastans)
+              .replaceAll(",", ".")
+              .replaceAll(";", ",");
+
+            try {
+              var a = evaluatex(latex, _funktiot)(_vakiot);
+              var el = document.createElement("textarea");
+
+              if (merkitsevät) {
+                a = parseFloat(a.toPrecision(tarkkuus));
+              } else if (tarkkuus != 0) {
+                var power = Math.pow(10, tarkkuus || 0);
+                a = (Math.round(a * power) / power).toFixed(tarkkuus);
+              }
+              if (tieteellinen) {
+                if (tarkkuus != 0) {
+                  a = parseFloat(a).toExponential(tarkkuus);
+                } else {
+                  a = parseFloat(a).toExponential();
+                }
+              }
+
+              if (!isNaN(a) && isFinite(a)) {
+                a = a.toString().replaceAll(".", ",");
+                if (a.indexOf("e+") >= 0) {
+                  var i = a.indexOf("e+");
+                  b = a.substring(i + 2);
+
+                  c = a.substring(0, i) + "\\cdot10^{" + b + "}";
+
+                  lastans = c;
+                  ans.innerText = "= " + c;
+                  el.innerText = c;
+                } else if (a.indexOf("e-") >= 0) {
+                  console.log(a.indexOf("e-"));
+                  var i = a.indexOf("e-");
+                  b = a.substring(i + 2);
+
+                  c = a.substring(0, i) + "\\cdot10^{-" + b + "}";
+
+                  lastans = c;
+                  ans.innerText = "= " + c;
+                  el.innerText = c;
+                } else {
+                  lastans = a;
+                  ans.innerText = "= " + a;
+                  el.innerText = a;
+                }
+                MQ.StaticMath(ans);
+                ans.setAttribute("ondblclick", "annaVastaus(this)");
+
+                el.setAttribute("readonly", "");
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand("copy");
+                document.body.removeChild(el);
+
+                var main = document.getElementById("tulosteet");
+
+                var node = document.createElement("div");
+                node.setAttribute("id", "tuloste");
+                main.appendChild(node);
+                // Append to body:
+
+                var div1 = document.createElement("div");
+                var div2 = document.createElement("div");
+
+                node.append(div1);
+                node.append(div2);
+
+                eq.innerText = olatex;
+                div1.appendChild(eq);
+                MQ.StaticMath(eq);
+                div2.appendChild(ans);
+                eq.setAttribute("ondblclick", "annaLasku(this)");
+
+                main.scrollTo(0, main.scrollHeight);
+                answerMathField.latex("");
+              } else {
+                errorEl.innerText = "NaN";
+              }
+            } catch (err) {
+              console.log(err);
+              errorEl.innerText = "Käännösvirhe";
+            }
+            console.log(latex);
+            answerMathField.focus();
+          },
+        },
+      });
+
+      function annaVastaus(el) {
+        t = MQ(el).latex().replace("=", "");
+        answerMathField.write(t);
+        answerMathField.focus();
+      }
+      function annaLasku(el) {
+        t = MQ(el).latex();
+        answerMathField.write(t);
+        answerMathField.focus();
+      }
+      function annaVakio(el) {
+        t = MQ(el).latex().split("=")[0];
+        answerMathField.write(t);
+        answerMathField.focus();
+      }
+      function annaFunktio(el) {
+        console.log(MQ(el).latex());
+        t = MQ(el).latex().split("=")[0];
+        answerMathField.write(t);
+        answerMathField.focus();
+      }
+
+      function ToggleBar(palkki) {
+        switch (palkki) {
+          case "vakiokirja":
+            if (vakiokirja.style.display == "block") {
+              vakiokirja.style.display = "none";
+            } else {
+              vakiokirja.style.display = "block";
+              asetukset.style.display = "none";
+              funktiokirja.style.display = "none";
+            }
+            break;
+
+          case "funktiokirja":
+            if (funktiokirja.style.display == "block") {
+              funktiokirja.style.display = "none";
+            } else {
+              funktiokirja.style.display = "block";
+              asetukset.style.display = "none";
+              vakiokirja.style.display = "none";
+            }
+            break;
+
+          case "asetukset":
+            if (asetukset.style.display == "block") {
+              asetukset.style.display = "none";
+            } else {
+              asetukset.style.display = "block";
+              funktiokirja.style.display = "none";
+              vakiokirja.style.display = "none";
+            }
+            break;
+        }
+        if (
+          vakiokirja.style.display == "none" &&
+          funktiokirja.style.display == "none" &&
+          asetukset.style.display == "none"
+        ) {
+          bar.style.width = "40px";
+        } else {
+          bar.style.width = "350px";
+        }
+      }
+
+      for (const [key, value] of Object.entries(_vakiot)) {
+        vakiokirjaData[key] = key + "=" + value;
+      }
+      PäivitäVakiokirja();
+
+      PäivitäFunktiokirja();
+
+      function LisääFunktioTaiMuuttuja(latex, olatex) {
+        //Sisältää funktion tai vakion julistuksen
+        const eq = document.createElement("p");
+
+        var julistus = latex.split("=")[0];
+        nimi = julistus.split("\\")[0];
+
+        if (julistus.includes("(") && julistus.includes(")")) {
+          parametrit = julistus.substring(julistus.indexOf("(") + 1);
+          parametrit = parametrit.substring(0, parametrit.indexOf(")") - 6);
+
+          var args = parametrit.split(",");
+          for (let arg of args) {
+            if (!/^[a-zA-Z]+$/.test(arg)) {
+              errorEl.innerText = "Funktion muuttuja ei voi olla numero";
+              return null;
+            }
+            if (!latex.split("=")[1].includes(arg)) {
+              errorEl.innerText =
+                "Funktion lauseke ei sisällä kaikkia muuttujia";
+              return null;
+            }
+          }
+          var f = function (args) {
+            var dict = _vakiot;
+            for (var i = 0; i < arguments.length; i++) {
+              dict[parametrit.split(",")[i]] = arguments[i];
+            }
+            var a = latex.split("=")[1];
+            latex = LastParse(latex);
+            a = a
+              .replaceAll("\\pi", "PI")
+              .replaceAll("ans", lastans)
+              .replaceAll(",", ".")
+              .replaceAll(";", ",");
+
+            return evaluatex(a, _funktiot)(dict);
+          };
+
+          try {
+            var testi = f(1);
+          } catch (error) {
+            errorEl.innerText = "Funktio ei ole kelpoinen";
+            return null;
+          }
+
+          _funktiot[nimi] = f;
+          //Lisää funktio
+          funktiokirjaData[nimi] =
+            nimi + "(" + parametrit + ")=" + latex.split("=")[1];
+          PäivitäFunktiokirja();
+          //Tallenna funktio
+          localStorage.setItem("funktiot", JSON.stringify(_funktiot));
+          //Vastauksen käsittely
+          var main = document.getElementById("tulosteet");
+          var node = document.createElement("div");
+          node.setAttribute("id", "tuloste");
+          main.appendChild(node);
+          // Append to body:
+          eq.innerText = olatex;
+          node.appendChild(eq);
+          MQ.StaticMath(eq);
+
+          main.scrollTo(0, main.scrollHeight);
+          answerMathField.latex("");
+          return null;
+        } else if (!/\d/.test(julistus.split("_")[0])) {
+          //Tallenna vakio
+          vakiokirjaData[nimi] = nimi + "=" + latex.split("=")[1];
+          latex = latex
+            .replaceAll("\\pi", "PI")
+            .replaceAll("ans", lastans)
+            .replaceAll(",", ".")
+            .replaceAll(";", ",");
+          _vakiot[nimi] = evaluatex(latex.split("=")[1], _funktiot)(_vakiot);
+
+          PäivitäVakiokirja();
+          localStorage.setItem("vakiot", JSON.stringify(_vakiot));
+          var main = document.getElementById("tulosteet");
+
+          var node = document.createElement("div");
+          node.setAttribute("id", "tuloste");
+          main.appendChild(node);
+          // Append to body:
+          eq.innerText = olatex;
+          node.appendChild(eq);
+          MQ.StaticMath(eq);
+
+          main.scrollTo(0, main.scrollHeight);
+          answerMathField.latex("");
+          return null;
+        }
+
+        errorEl.innerText = "Vakion nimi ei voi sisältää numeroita";
+      }
+
+      function PäivitäFunktiokirja() {
+        for (const [key, value] of Object.entries(funktiokirjaData)) {
+          const vanha = document.getElementById(key);
+          if (vanha != null) {
+            if (vanha.className == "funktiokirja") {
+              vanha.remove();
+            }
+          }
+
+          const elementti = document.createElement("p");
+          elementti.setAttribute("ondblclick", "annaFunktio(this)");
+          elementti.innerText = value;
+          MQ.StaticMath(elementti);
+
+          const astia = document.createElement("div");
+          astia.setAttribute("id", key);
+          astia.setAttribute("class", "funktiokirja");
+
+          funktiokirja.appendChild(astia);
+          astia.appendChild(elementti);
+        }
+      }
+
+      function PäivitäVakiokirja() {
+        for (const [key, value] of Object.entries(vakiokirjaData)) {
+          const vanha = document.getElementById(key);
+          if (vanha != null) {
+            if (vanha.className == "vakiokirja") {
+              vanha.remove();
+            }
+          }
+          const elementti = document.createElement("p");
+          elementti.setAttribute("ondblclick", "annaVakio(this)");
+          var a = value;
+          if (a.toString().indexOf("e+") >= 0) {
+            var i = a.toString().indexOf("e+");
+            b = a.toString().substring(i + 2);
+
+            c = a.toString().substring(0, i) + "\\cdot10^{" + b + "}";
+
+            elementti.innerText = c;
+          } else if (a.toString().indexOf("e-") >= 0) {
+            var i = a.toString().indexOf("e-");
+            b = a.toString().substring(i + 2);
+
+            c = a.toString().substring(0, i) + "\\cdot10^{-" + b + "}";
+
+            elementti.innerText = c;
+          } else {
+            elementti.innerText = a;
+          }
+          MQ.StaticMath(elementti);
+
+          const astia = document.createElement("div");
+          astia.setAttribute("id", key);
+          astia.setAttribute("class", "vakiokirja");
+
+          vakiokirja.appendChild(astia);
+          astia.appendChild(elementti);
+        }
+      }
+
+      function ToggleOhje() {
+        ToggleBar("asetukset");
+        const palkki = document.getElementById("ohje");
+        if (palkki.style.display == "block") {
+          palkki.style.display = "none";
+        } else {
+          palkki.style.display = "block";
+        }
+      }
+
+      function LastParse(latex) {
+        var regex = /sqrt/gi,
+          result,
+          indices = [];
+        while ((result = regex.exec(latex))) {
+          var i = result.index;
+          var j = i;
+          while (latex[j] != "}") {
+            j++;
+          }
+          var terms = latex
+            .substring(i + 5, j)
+            .replace("{", "")
+            .split("]");
+          if (terms[1] != null) {
+            latex =
+              latex.substr(0, i - 1) +
+              "rootn(" +
+              terms[1] +
+              ";" +
+              terms[0] +
+              ")" +
+              latex.substr(j + 1);
+          }
+        }
+        var regex = /log_/gi,
+          result,
+          indices = [];
+        while ((result = regex.exec(latex))) {
+          var i = result.index;
+          var j = i;
+          var base;
+          if (latex.charAt(i + 4) == "{") {
+            while (latex[j] != "}") {
+              j++;
+              if (j - i > 50) {
+                return null;
+              }
+            }
+            base = latex.substring(i + 5, j);
+          } else {
+            base = latex.charAt(i + 4);
+          }
+          var k = j;
+          while (latex[k] != "(") {
+            k++;
+            if (k - i > 50) {
+              return null;
+            }
+          }
+          var l = k;
+          while (latex[l] != ")") {
+            l++;
+            if (l - i > 50) {
+              return null;
+            }
+          }
+          var x = latex.substring(k + 1, l - 6);
+          latex =
+            latex.substr(0, i - 1) +
+            " (logn(" +
+            x +
+            ";" +
+            base +
+            "))" +
+            latex.substr(l + 1);
+        }
+
+        return latex;
+      }
+
+      function ToggleTeema(teema) {
+        switch (teema) {
+          case "tumma":
+            document.body.classList.add("tummateema");
+            document.body.classList.remove("vaaleateema");
+            localStorage.setItem("teema", "tumma");
+            break;
+
+          case "vaalea":
+            document.body.classList.add("vaaleateema");
+            document.body.classList.remove("tummateema");
+            localStorage.setItem("teema", "vaalea");
+            break;
+
+          case null:
+            document.body.classList.add("vaaleateema");
+            document.body.classList.remove("tummateema");
+            localStorage.setItem("teema", "vaalea");
+            break;
+        }
+      }
+
+      function ToggleTarkkuus(element) {
+        var tavallinen = document.getElementById("tavallinen");
+        var desimaali = document.getElementById("desimaali");
+        var merkitsevä = document.getElementById("merkitsevä");
+
+        if (element == tavallinen) {
+          tarkkuus = 0;
+          element.innerText = "⚬ " + element.innerText;
+          desimaali.innerText = "1 desimaali";
+          merkitsevä.innerText = "1 merkitsevä luku";
+        }
+
+        if (element == merkitsevä) {
+          if (element.innerText.charAt(0) != "⚬") {
+            tarkkuus = 1;
+            merkitsevät = true;
+          } else {
+            if (tarkkuus + 1 > 10) {
+              tarkkuus = 1;
+            } else {
+              tarkkuus += 1;
+            }
+          }
+
+          element.innerText = "⚬ " + tarkkuus + " merkitsevää lukua";
+          tavallinen.innerText = "Tavallinen";
+          desimaali.innerText = "1 desimaali";
+        } else {
+          merkitsevät = false;
+        }
+
+        if (element == desimaali) {
+          if (element.innerText.charAt(0) != "⚬") {
+            tarkkuus = 1;
+          } else {
+            if (tarkkuus + 1 > 10) {
+              tarkkuus = 1;
+            } else {
+              tarkkuus += 1;
+            }
+          }
+
+          element.innerText = "⚬ " + tarkkuus + " desimaalia";
+          tavallinen.innerText = "Tavallinen";
+          merkitsevä.innerText = "1 merkitsevä luku";
+        }
+      }
+
+      function ToggleMuoto(element) {
+        if (element.innerText.charAt(0) != "⚬") {
+          tieteellinen = !tieteellinen;
+        }
+        yleinen = document.getElementById("yleinen");
+        tiede = document.getElementById("tieteellinen");
+
+        yleinen.innerText = "Yleinen";
+        tiede.innerText = "Tieteellinen";
+
+        element.innerText = "⚬ " + element.innerText;
+
+        console.log(tieteellinen);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,259 @@
+:root{
+    --tausta: rgb(255, 255, 255);
+    --palkki: rgb(248, 248, 248);
+    --syöte: rgb(255, 255, 255);
+    --teksti: rgb(0, 0, 0);
+    --invert: 0;
+    --border: solid #010357;
+    --palkkiRaja: solid rgb(180, 180, 180);
+}
+
+.tummateema{
+    --tausta: rgb(27, 27, 27);
+    --palkki: rgb(34, 34, 34);
+    --syöte: rgb(39, 39, 39);
+    --teksti: rgb(221, 221, 221);
+    --invert: 1;
+    --border: solid #272857;
+    --palkkiRaja: solid rgb(53, 52, 52);
+}
+
+.vaaleateema{
+  --tausta: rgb(255, 255, 255);
+  --palkki: rgb(248, 248, 248);
+  --syöte: rgb(255, 255, 255);
+  --teksti: rgb(0, 0, 0);
+  --invert: 0;
+  --border: solid #010357;
+  --palkkiRaja: solid rgb(180, 180, 180);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0px;
+  background-color: var(--tausta);
+}
+#syöte {
+  position: fixed;
+  bottom: 0;
+  right: 10px;
+  left: 6px;
+}
+#answer {
+  width: 100%;
+  border: 2px var(--border);
+  border-radius: 3px;
+  background-color: var(--syöte);
+}
+
+#ylä {
+  height: calc(100% - 100px);
+  display: flex;
+  align-items: stretch;
+}
+#tulosteet {
+  flex-grow: 1;
+  overflow: auto;
+}
+#palkki {
+  width: 40px;
+  margin: 5px;
+  background-color: var(--palkki);
+  display: flex;
+  right: 0px;
+  align-items: stretch;
+  border-radius: 5px;
+  padding: 5px;
+  border: 1px var(--palkkiRaja);
+}
+
+.vastaus {
+  margin-top: 0px;
+  margin-bottom: 8px;
+}
+.mq-math-mode {
+  margin-top: 8px;
+  margin-bottom: 0px;
+}
+#tuloste {
+  padding: 10px;
+  flex-grow: 1;
+  overflow: auto;
+  overflow-x: hidden;
+}
+#error {
+  position: fixed;
+  bottom: 6px;
+  right: 20px;
+  color: var(--teksti);
+}
+#kirjat {
+  flex-grow: 1;
+  overflow-x: hidden;
+
+}
+#vakiokirja,
+#funktiokirja,
+#asetukset {
+  display: none;
+  height: 95%;
+  width: 90%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-left: 15px;
+}
+
+#asetukset > button{
+  background-color: #b3b3b3;
+  color: white;
+  margin-bottom: 0px;
+  padding: 5px;
+  font-size: 16px;
+  border: none;
+  border-radius: 3px;
+}
+.vakiokirja, .funktiokirja{
+    height: 60px;
+    margin-left: 10px;
+}
+#napit {
+  margin: 0px;
+  width: 40px;
+  min-width: 40px;
+  height: 100%;
+  right: 0px;
+}
+#nappi {
+  width: 100%;
+  aspect-ratio: 1/1;
+  text-align: left;
+  background-image: "VakiokirjaKuva.png";
+  border-radius: 10px;
+  border-color: #888;
+  filter: invert(var(--invert));
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+button {
+  margin: 20px;
+  filter: invert(var(--invert));
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+#ohje {
+  display: none;
+  background-color: var(--palkki);
+
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  left: 10px;
+  bottom: 100px;
+
+  padding: 20px;
+  padding-left: 40px;
+  padding-right: 30%;
+  border-radius: 10px;
+
+  overflow-x: auto;
+}
+
+#ohje > button {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.otsikko {
+  padding-top: 20px;
+}
+
+.mq-math-mode {
+    color: var(--teksti);
+    border-color: var(--teksti);
+}
+
+.otsikko{
+    margin: 0px;
+    margin-bottom: 20px;
+    color: var(--teksti);
+}
+
+p{
+    color: var(--teksti);
+}
+
+
+/* Dropdown Button */
+.dropbtn {
+  background-color: #b3b3b3;
+  color: white;
+  margin-bottom: 0px;
+  padding: 5px;
+  font-size: 16px;
+  border: none;
+  border-radius: 3px;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  margin-left: 20px;
+
+}
+
+.dropdown-content > button{
+  width: 170px;
+  margin: 0px;
+  text-align: left;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #797979;}
