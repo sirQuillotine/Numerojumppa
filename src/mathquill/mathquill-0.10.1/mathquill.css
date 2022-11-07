@@ -87,7 +87,16 @@
   white-space: nowrap;
   overflow: hidden;
   vertical-align: middle;
+  margin-left: 20px;
+  margin-bottom: 0px;
 }
+
+#bottom-container .mq-root-block{
+  margin: 11px;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 .mq-math-mode {
   font-variant: normal;
   font-weight: normal;

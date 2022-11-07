@@ -51,7 +51,7 @@
         }
       };
     </script>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="leevintyyli.css" />
     <link rel="stylesheet" href="mathquill\mathquill-0.10.1\mathquill.css" />
     <script src="evaluatex\dist\evaluatex.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -62,155 +62,34 @@
 
     <script src="Järjestelmäarvot.js"></script>
 
-    <p id="syöte"><span id="answer"></span></p>
-    <p id="error"></p>
-    <div id="ylä" class="flex-container">
-      <div id="tulosteet"></div>
-      <div id="palkki">
-        <div id="kirjat">
-          <div id="vakiokirja"><p class="otsikko bold">VAKIOKIRJA</p></div>
+    <div id="main-container">
+      <div id="top-container">
+        <div id="print-field"></div>
 
-          <div id="funktiokirja"><p class="otsikko bold">FUNKTIOKIRJA</p></div>
-          <div id="asetukset">
-            <p class="otsikko bold">ASETUKSET</p>
-            <div class="dropdown">
-              <button class="dropbtn">Väriteema</button>
-              <div class="dropdown-content">
-                <button onclick="ToggleTeema('tummateema')">
-                  Tumma teema (idiooteille)
-                </button>
-                <button onclick="ToggleTeema('vaaleateema')">
-                  Vaalea teema
-                </button>
-              </div>
-            </div>
-            <button onclick="ToggleOhje()">Näytä ohje (idiooteille)</button>
-            <div class="dropdown">
-              <button class="dropbtn">Tuloksen muoto</button>
-              <div class="dropdown-content">
-                <button id="yleinen" onclick="ToggleMuoto(this)">
-                  Yleinen
-                </button>
-                <button id="tieteellinen" onclick="ToggleMuoto(this)">
-                  Tieteellinen
-                </button>
-              </div>
-            </div>
-            <div class="dropdown">
-              <button class="dropbtn">Tarkkuus</button>
-              <div class="dropdown-content">
-                <button id="tavallinen" onclick="ToggleTarkkuus(this)">
-                  Tavallinen
-                </button>
-                <button id="desimaali" onclick="ToggleTarkkuus(this)">
-                  1 desimaali
-                </button>
-                <button id="merkitsevä" onclick="ToggleTarkkuus(this)">
-                  1 merkitsevä luku
-                </button>
-              </div>
-            </div>
-          </div>
+        <div class="side-bar" id="books-bar">Ohjeet ja kirjat</div>
+
+        <div class="side-bar" id="settings-bar">Asetukset</div>
+      </div>
+      <p id="error"></p>
+      <div id="bottom-container">
+        <p id="syöte"><span id="answer"></span></p>
+
+        <div
+          onclick="ShowBooksBar()"
+          class="bottom-bar-button"
+          id="book-button"
+        >
+          <img src="./book-solid.svg" />
         </div>
 
-        <div id="napit">
-          <input
-            id="nappi"
-            type="image"
-            src="VakiokirjaKuva.png"
-            alt="text"
-            onclick="ToggleBar(vakiokirja)"
-          />
-
-          <input
-            id="nappi"
-            type="image"
-            src="FunktiokirjaKuva.png"
-            alt="text"
-            onclick="ToggleBar(funktiokirja)"
-          />
-
-          <input
-            id="nappi"
-            type="image"
-            src="AsetuksetKuva.png"
-            alt="text"
-            onclick="ToggleBar(asetukset)"
-          />
+        <div
+          onclick="ShowSettingsBar()"
+          class="bottom-bar-button"
+          id="settings-button"
+        >
+          <img src="./gear-solid.svg" />
         </div>
       </div>
-    </div>
-    <div id="ohje">
-      <button onclick="ToggleOhje()">Pois</button>
-
-      <p class="bold otsikko">PERUSTEET</p>
-      <p>
-        Ruudun alareunasta löytyy syöttökenttä, johon voi kirjoittaa useimpia
-        LaTex komentoja, kuten \frac, \sin, \sqrt. Laskua kirjoittaessa pitää
-        varoa ylimmääräisiä merkkejä, koska kääntäjä ei ymmärrä esimerkiksi
-        turhia operaattoreja tai välilyöntejä. Syöttökentän oikeaan laitaan
-        ilmestyy nykyisen laskun vastaus ja virhetilanteessa asianmukainen
-        virheilmoitus, kuten "Käännösvirhe", "NaN". Suorita laskutoimitus
-        painamalla Enter -näppäintä. Enter -näppäimellä voit myös siirtyä
-        syötteeseen.
-      </p>
-      <p>
-        Desimaaleja kirjoittaessa on käytettävä pistettä (.) tai pilkkua (,) ja
-        funktioiden muuttujien erottajana on käytettävä puolipistettä (;).
-      </p>
-      <p>
-        Virheettömän laskun tulos ilmestyy ruudun ylälaitaan, johon tallentuu
-        myös historia käyttökerran aikana lasketuista laskuista. Viimeiseen
-        tulokseen voi viitata kirjoittamalla syöttökenttään "ans" tai
-        tuplaklikkaamalla tulosta.
-      </p>
-      <p>
-        Ruudun vasemmasta laidasta löytyy näppäimet kaava- ja funktiokirjan
-        avaamiselle. Sieltä löytyy paikallisten vakioiden ja funktioiden lisäksi
-        käyttäjän itse lisäämät vakiot ja funktiot. Näitä voi lisätä omaan
-        laskuun helposti tuplaklikkaamalla mieluista kaavaa.
-      </p>
-
-      <p class="bold otsikko">PAIKALLISET VAKIOT, FUNKTIOT JA KOMENNOT</p>
-      <p>
-        Kääntäjä ymmärtää Javascriptin Math kirjaston mukaiset komennot, kuten
-        pow ja sin.Samoin myös vakiot, kuten PI ja E. Voit käyttää näitä
-        kirjoittamalla niiden nimen syöttökenttään. Paikallisissa vakioissa
-        tärkeää isolla kirjoittaminen. Funktioita käytetään samoin
-        kirjoittamalla funktion nimi, jota seuraa sulut, joiden sisällä ovat
-        muuttujat. Esimerkiksi pow(2;3). Huomaa välilyöntien käyttö.
-      </p>
-
-      <p>
-        Logaritmien käyttö onnistuu funktiolla logn(x;kanta), sillä petollisesti
-        täällä log tarkoittaa luonnollista logaritmia. Vaihtoehtoisesti voi myös
-        kirjoittaa kantaluvun log sanan alaindeksiin. Esimerkiksi log_2(10),
-        joka vastaa kaksikantaista logaritmia luvusta 10.
-      </p>
-
-      <p class="bold otsikko">KÄYTTÄJÄVAKIOT JA -FUNKTIOT</p>
-      <p>
-        Käyttäjä voi lisätä omia vakioita ja funktioita kirjoittamalla
-        syöttökenttään funktion nimen, jota seuraa muuttujat sulkujen sisällä.
-        Sitä seuraa itse funktio yhtäsuuruusmerkin erottamana. Esimerkiksi
-        f(x;y)=x*y+1. Funktio tallentuu funktiokirjaan, josta se on helppo
-        myöhemmin kopioida. Vakio lisätään samalla tavalla ensin nimeämällä
-        funktio ja yhtäsuurusmerkin jälkeen antamalla vakion arvo. Esimerkiksi
-        vakio=23. Vakion tai funktion nimi ei voi sisältää numeroita, mutta
-        yhden merkin pituiset alaindeksit ovat sallittuja. Vakioiden ja
-        funktioiden määrittelyssä voi käyttää ennen määriteltyjä vakioita ja
-        funktioita. Esimerkiksi g(x)=f(x)+vakio.
-      </p>
-
-      <p>
-        Vakion tai funktion käyttäminen onnistuu kirjoittamalla sen nimi
-        syöttökenttään tai kopioimalla se vakio- tai funktiokirjasta.
-      </p>
-
-      <p>
-        Jos tuotteessa ilmenee odottamaton ongelma, ota yhteyttä sähköpostitse
-        teeiteparempi@gmail.com
-      </p>
     </div>
 
     <script>
@@ -231,13 +110,6 @@
         _funktiot = funktiot;
       }
 
-      //Configure sidebar
-      var aukinainenkirja;
-      const vakiokirja = document.getElementById("vakiokirja");
-      const funktiokirja = document.getElementById("funktiokirja");
-      const asetukset = document.getElementById("asetukset");
-      const bar = document.getElementById("palkki");
-
       var vakiokirjaData = {};
       var funktiokirjaData = funktioData;
 
@@ -245,36 +117,36 @@
 
       if (tieteellinen == null || tieteellinen == "false") {
         tieteellinen = false;
-        yleinen = document.getElementById("yleinen");
-        yleinen.innerText = "⚬ Yleinen";
+        //yleinen = document.getElementById("yleinen");
+        //yleinen.innerText = "⚬ Yleinen";
       } else {
         tieteellinen = true;
-        tiede = document.getElementById("tieteellinen");
-        tiede.innerText = "⚬ Tieteellinen";
+        //tiede = document.getElementById("tieteellinen");
+        //tiede.innerText = "⚬ Tieteellinen";
       }
 
       var tarkkuuss = localStorage.getItem("tarkkuus");
       merkitsevät = false;
       if (tarkkuuss == null) {
-        document.getElementById("tavallinen").innerText = "⚬ Tavallinen";
+        //.getElementById("tavallinen").innerText = "⚬ Tavallinen";
         tarkkuus = 15;
       } else {
         switch (tarkkuuss.split(":")[0]) {
           case "tavallinen":
-            document.getElementById("tavallinen").innerText = "⚬ Tavallinen";
+            //document.getElementById("tavallinen").innerText = "⚬ Tavallinen";
             tarkkuus = 15;
             break;
 
           case "desimaali":
-            document.getElementById("desimaali").innerText =
-              "⚬ " + tarkkuuss.split(":")[1] + " desimaalia";
+            //document.getElementById("desimaali").innerText =
+            "⚬ " + tarkkuuss.split(":")[1] + " desimaalia";
             tarkkuus = parseInt(tarkkuuss.split(":")[1]);
             break;
 
           case "merkitsevä":
             merkitsevät = true;
-            document.getElementById("merkitsevä").innerText =
-              "⚬ " + tarkkuuss.split(":")[1] + " merkitsevää numeroa";
+            //document.getElementById("merkitsevä").innerText =
+            "⚬ " + tarkkuuss.split(":")[1] + " merkitsevää numeroa";
             tarkkuus = parseInt(tarkkuuss.split(":")[1]);
             break;
         }
@@ -433,7 +305,7 @@
                 document.execCommand("copy");
                 document.body.removeChild(el);
 
-                var main = document.getElementById("tulosteet");
+                var main = document.getElementById("print-field");
 
                 var node = document.createElement("div");
                 node.setAttribute("id", "tuloste");
@@ -508,13 +380,14 @@
         }
       }
 
+      /*
       for (const [key, value] of Object.entries(_vakiot)) {
         vakiokirjaData[key] = key + "=" + value;
       }
       PäivitäVakiokirja();
 
       PäivitäFunktiokirja();
-
+      */
       function LisääFunktioTaiMuuttuja(latex, olatex) {
         //Sisältää funktion tai vakion julistuksen
         const eq = document.createElement("p");
@@ -827,6 +700,34 @@
         element.innerText = "⚬ " + element.innerText;
 
         console.log(tieteellinen);
+      }
+
+      function ShowSettingsBar() {
+        var x = document.getElementById("settings-bar");
+        var y = document.getElementById("books-bar");
+
+        console.log(x.style.display);
+
+        if (x.style.display === "none" || x.style.display == "") {
+          y.style.display = "none";
+          x.style.display = "block";
+        } else {
+          y.style.display = "none";
+          x.style.display = "none";
+        }
+      }
+
+      function ShowBooksBar() {
+        var x = document.getElementById("settings-bar");
+        var y = document.getElementById("books-bar");
+
+        if (y.style.display === "none" || y.style.display == "") {
+          x.style.display = "none";
+          y.style.display = "block";
+        } else {
+          y.style.display = "none";
+          x.style.display = "none";
+        }
       }
     </script>
   </body>
