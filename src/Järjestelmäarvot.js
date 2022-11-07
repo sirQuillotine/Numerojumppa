@@ -31,6 +31,9 @@ var funktiot = {
   atana: function (x){
     return Math.atan(x)*(180/Math.PI);
   },
+  ln: function (x){
+    return Math.log(x);
+  }
 }
 
 var funktioData={
@@ -41,4 +44,5 @@ var funktioData={
   asina: "a\\sin a\\left(x\\right)=a\\cos\\left(x\\right)\\cdot\\frac{180}{\\pi}",
   acosa: "a\\sin a\\left(x\\right)=a\\cos\\left(x\\right)\\cdot\\frac{180}{\\pi}",
   atana: "a\\sin a\\left(x\\right)=a\\cos\\left(x\\right)\\cdot\\frac{180}{\\pi}",
+  ln: "ln\\left(x\\right)=log\\left(x\\right)"
 }
